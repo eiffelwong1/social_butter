@@ -28,11 +28,11 @@ npm start
 
 Now you'll need to pick a host to deploy it to.
 
-### DIY
+## DEV
 
-If you're familiar with deploying node applications, the built-in Remix app server is production-ready.
+#### TailwindCSS build
+```bash
+npx tailwindcss -i ./app/styles/tailwind.css -o ./app/styles/tailwind_out.css --watch
+```
 
-Make sure to deploy the output of `remix build`
 
-- `build/`
-- `public/build/`
