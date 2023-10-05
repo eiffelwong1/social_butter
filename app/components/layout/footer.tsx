@@ -1,7 +1,3 @@
-
-
 export default function Footer() {
-    <div>
-        footer placeholder
-    </div>
+  return <div className="bg-neutral-dark">footer placeholder</div>;
 }

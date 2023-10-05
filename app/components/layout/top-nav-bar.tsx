@@ -1,10 +1,10 @@
-import { useState } from "react";
+
 import { Menu } from "@headlessui/react";
 import { Link } from "@remix-run/react";
 
 export default function TopNavBar() {
   return (
-    <nav className="grid justify-stretch grid-flow-row sm:grid-flow-col overflow-visible">
+    <nav className="bg-main-yellow grid justify-stretch grid-flow-row px-12 py-4 sm:grid-flow-col overflow-visible">
       <div>
         <img
           className="h-32 w-auto lg:block justify-start"
@@ -21,6 +21,29 @@ export default function TopNavBar() {
       </div>
       <div className="flex justify-end overflow-visible">
         <Menu>
+          <Menu.Items className='absolute top-24 mt-2 w-56 origin-top-right'>
+            <Menu.Item>
+              {({ active }) => (
+                <Link className={`${active && "bg-blue-500"} group flex w-full items-center`} to="/sign_up">
+                  Sign Up
+                </Link>
+              )}
+            </Menu.Item>
+            <Menu.Item>
+              {({ active }) => (
+                <Link className={`${active && "bg-blue-500"} group flex w-full items-center`} to="/log_in">
+                  Log In
+                </Link>
+              )}
+            </Menu.Item>
+            <Menu.Item>
+              {({ active }) => (
+                <Link className={`${active && "bg-blue-500"} group flex w-full items-center`} to="/log_in">
+                  Orginize Activities
+                </Link>
+              )}
+            </Menu.Item>
+          </Menu.Items>
           <Menu.Button>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -37,22 +60,6 @@ export default function TopNavBar() {
               />
             </svg>
           </Menu.Button>
-          <Menu.Items>
-            <Menu.Item>
-              {({ active }) => (
-                <Link className={`${active && "bg-blue-500"}`} to="/sign_up">
-                  Sign Up
-                </Link>
-              )}
-            </Menu.Item>
-            <Menu.Item>
-              {({ active }) => (
-                <Link className={`${active && "bg-blue-500"}`} to="/log_in">
-                  Log In
-                </Link>
-              )}
-            </Menu.Item>
-          </Menu.Items>
         </Menu>
       </div>
     </nav>

@@ -1,10 +1,10 @@
 import type { LinksFunction } from "@remix-run/node";
 import stylesheet from "./styles/tailwind.css";
-import { Scripts } from "@remix-run/react";
 import { useRouteError, isRouteErrorResponse } from "react-router-dom";
 
-import { LiveReload, Outlet, Links, Meta } from "@remix-run/react";
+import { LiveReload, Outlet, Links, Meta, Scripts  } from "@remix-run/react";
 import TopNavBar from "~/components/layout/top-nav-bar";
+import Footer from "~/components/layout/footer";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
@@ -19,10 +19,14 @@ export default function App() {
         <title>Social Butter</title>
         <Links />
       </head>
-      <body>
-        <Scripts />
+      <body className="flex flex-col min-h-screen">
         <TopNavBar />
-        <Outlet />
+        <div className="flex-grow">
+          <Outlet />
+        </div>
+        <Footer />
+
+        <Scripts />
         <LiveReload />
       </body>
     </html>
