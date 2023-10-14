@@ -1,4 +1,4 @@
-import type { LinksFunction, LoaderArgs } from "@remix-run/node";
+import type { LinksFunction } from "@remix-run/node";
 import stylesheet from "./styles/tailwind.css";
 import { useRouteError, isRouteErrorResponse } from "react-router-dom";
 
@@ -6,40 +6,9 @@ import { LiveReload, Outlet, Links, Meta, Scripts  } from "@remix-run/react";
 import TopNavBar from "~/components/layout/top-nav-bar";
 import Footer from "~/components/layout/footer";
 
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth"
-import { getAnalytics } from "firebase/analytics";
-import { getUserSession } from "./utils/session.server";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-
-// Initialize Firebase
-const firebaseConfig = {
-  apiKey: "AIzaSyCq_YMOhc3r2yXmDng0_csTxs9cHl5W7xM",
-  authDomain: "social-butter-e184f.firebaseapp.com",
-  databaseURL: "https://social-butter-e184f-default-rtdb.firebaseio.com",
-  projectId: "social-butter-e184f",
-  storageBucket: "social-butter-e184f.appspot.com",
-  messagingSenderId: "417939394476",
-  appId: "1:417939394476:web:011a2553a1e4093f293409",
-  measurementId: "G-87774VJX3H"
-};
-const firebase_app = initializeApp(firebaseConfig);
-const auth = getAuth(firebase_app);
-
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
 ];
-
-export async function loader({request}:LoaderArgs){
-  const userSession = await getUserSession(request);
-
-  return {userSession: userSession}
-}
 
 export default function App() {
   return (
@@ -48,7 +17,6 @@ export default function App() {
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>Social Butter</title>
-        <Meta />
         <Links />
       </head>
       <body className="flex flex-col min-h-screen">
@@ -81,7 +49,7 @@ export function ErrorBoundary() {
     error_message = "Oops, an unknown error have occured"
   }
   return (
-    <html lang="en">
+    <html>
       <head>
         <title>Oops!</title>
         <Meta />
