@@ -17,20 +17,6 @@ import { getUserSession } from "./utils/session.server";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 
-// Initialize Firebase
-const firebaseConfig = {
-  apiKey: "AIzaSyCq_YMOhc3r2yXmDng0_csTxs9cHl5W7xM",
-  authDomain: "social-butter-e184f.firebaseapp.com",
-  databaseURL: "https://social-butter-e184f-default-rtdb.firebaseio.com",
-  projectId: "social-butter-e184f",
-  storageBucket: "social-butter-e184f.appspot.com",
-  messagingSenderId: "417939394476",
-  appId: "1:417939394476:web:011a2553a1e4093f293409",
-  measurementId: "G-87774VJX3H"
-};
-const firebase_app = initializeApp(firebaseConfig);
-const auth = getAuth(firebase_app);
-
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
 ];
