@@ -43,7 +43,6 @@ export default function App() {
           <Outlet />
         </div>
         <Footer />
-
         <Scripts />
         <LiveReload />
       </body>

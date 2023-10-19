@@ -1,14 +1,13 @@
 import { Menu } from "@headlessui/react";
-import { LoaderArgs } from "@remix-run/node";
-import { Link, useLoaderData, useRouteLoaderData } from "@remix-run/react";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { Form, Link, useLoaderData } from "@remix-run/react";
 import { useCurrentUser } from "~/hook/useCurrentUser";
-import { getUserSession } from "~/utils/session.server"
-
+import { auth } from "~/utils/firebase.server";
+import { onAuthStateChanged } from "firebase/auth";
+import { LoaderArgs } from "@remix-run/node";
+import React from "react";
 
 export default function TopNavBar() {
-  const userSession = useCurrentUser()
-  console.log(userSession)
+  const userSession = useCurrentUser();
 
   return (
     <nav className="w-full bg-main-yellow grid justify-stretch grid-flow-row px-12 py-4 sm:grid-flow-col">
@@ -28,45 +27,9 @@ export default function TopNavBar() {
       </div>
       <div className="flex justify-end overflow-visible">
         <Menu>
-          <Menu.Items className="absolute top-24 mt-2 w-56 origin-top-right">
-            <Menu.Item>
-              {({ active }) => (
-                <Link
-                  className={`${
-                    active && "bg-blue-500"
-                  } group flex w-full items-center`}
-                  to="/sign_up"
-                >
-                  Sign Up
-                </Link>
-              )}
-            </Menu.Item>
-            <Menu.Item>
-              {({ active }) => (
-                <Link
-                  className={`${
-                    active && "bg-blue-500"
-                  } group flex w-full items-center`}
-                  to="/login"
-                >
-                  Log In
-                </Link>
-              )}
-            </Menu.Item>
-            <Menu.Item>
-              {({ active }) => (
-                <Link
-                  className={`${
-                    active && "bg-blue-500"
-                  } group flex w-full items-center`}
-                  to="/login"
-                >
-                  Orginize Activities
-                </Link>
-              )}
-            </Menu.Item>
-          </Menu.Items>
-          <p>{userSession?.currentUser ? `Hi ${userSession?.currentUser?.displayName ?? "User"}`:""}</p>
+          {userSession?.currentUser
+            ? LoggedInMenuItems()
+            : NotLoggedInMenuItems()}
           <Menu.Button>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -86,5 +49,70 @@ export default function TopNavBar() {
         </Menu>
       </div>
     </nav>
+  );
+}
+
+function NotLoggedInMenuItems() {
+  return (
+    <Menu.Items className="absolute top-24 mt-2 w-56 origin-top-right">
+      <Menu.Item>
+        {({ active }) => (
+          <Link
+            className={`${
+              active && "bg-blue-500"
+            } group flex w-full items-center`}
+            to="/sign_up"
+          >
+            Sign Up
+          </Link>
+        )}
+      </Menu.Item>
+      <Menu.Item>
+        {({ active }) => (
+          <Link
+            className={`${
+              active && "bg-blue-500"
+            } group flex w-full items-center`}
+            to="/login"
+          >
+            Log In
+          </Link>
+        )}
+      </Menu.Item>
+      <Menu.Item>
+        {({ active }) => (
+          <Link
+            className={`${
+              active && "bg-blue-500"
+            } group flex w-full items-center`}
+            to="/login"
+          >
+            Orginize Activities
+          </Link>
+        )}
+      </Menu.Item>
+    </Menu.Items>
+  );
+}
+
+function LoggedInMenuItems() {
+  return (
+    <Menu.Items className="absolute top-24 mt-2 w-56 origin-top-right">
+      <Menu.Item>
+        {({ active }) => (
+          <Link
+            className={`${
+              active && "bg-blue-500"
+            } group flex w-full items-center`}
+            to="/account-settings"
+          >
+            Account
+          </Link>
+        )}
+      </Menu.Item>
+      <Form method="POST" action="/logout">
+        <button>Logout</button>
+      </Form>
+    </Menu.Items>
   );
 }

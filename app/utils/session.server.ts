@@ -1,4 +1,6 @@
 import { createCookieSessionStorage, redirect } from '@remix-run/node'
+import { User, onAuthStateChanged } from 'firebase/auth'
+import { auth } from '~/utils/firebase.server'
 
 const sessionSecret = process.env.SESSION_SECRET
 if (!sessionSecret) {
@@ -28,7 +30,7 @@ export async function createUserSession (userSession: JSON, redirectTo: string) 
 }
 
 export type UserSession = {
-  currentUser: string
+  currentUser: User
 }
 
 export async function getUserSession (
@@ -49,3 +51,4 @@ export async function deleteUserSession (request: Request) {
     }
   })
 }
+
