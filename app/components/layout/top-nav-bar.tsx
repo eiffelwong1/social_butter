@@ -10,7 +10,7 @@ export default function TopNavBar() {
   const userSession = useCurrentUser();
 
   return (
-    <nav className="w-full bg-main-yellow grid justify-stretch grid-flow-row px-12 py-4 sm:grid-flow-col">
+    <nav className="z-30 w-full bg-main-yellow grid justify-stretch grid-flow-row px-12 py-4 h-32 overflow-visible sm:grid-flow-col">
       <div>
         <img
           className="h-32 w-auto lg:block justify-start"
