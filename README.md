@@ -1,6 +1,13 @@
-# Welcome to Remix!
+# Welcome to Social Butter!
 
-- [Remix Docs](https://remix.run/docs)
+## Tool Used
+
+- [Remix](https://remix.run/docs)
+- [React](https://react.dev/)
+- [TailWindCSS](https://tailwindcss.com)
+- [HeadlessUI](https://headlessui.com)
+- [GoogleMap API](https://developers.google.com/maps)
+- [Vercel](https://vercel.com)
 
 ## Development
 
