@@ -1,6 +1,15 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { GoogleMap, useLoadScript, MarkerF } from "@react-google-maps/api";
 import { useLoaderData } from "@remix-run/react";
+import usePlacesAutoComplete, {
+  getGeocode,
+  getLatLng,
+} from "use-places-autocomplete";
+import { Combobox } from "@headlessui/react";
+import {
+  GoogleMapsProvider,
+  useGoogleMap,
+} from "@ubilabs/google-maps-react-hooks";
 
 import type { MetaFunction } from "@remix-run/node";
 
@@ -21,35 +30,116 @@ export function loader() {
   };
 }
 
-function Map() {
-  var userLng = 0;
-  var userLat = 0;
-  
-  navigator.geolocation.getCurrentPosition(function (position) {
-    userLng = position.coords.longitude;
-    userLat = position.coords.latitude;
-  });
+const PlacesAutocomplete = ({ setSelected }) => {
+  const {
+    ready,
+    value,
+    setValue,
+    suggestions: { status, data },
+    clearSuggestions,
+  } = usePlacesAutoComplete({debounce: 300});
 
-  const center = useMemo(() => ({ lat: userLat, lng: userLng }), []);
+  console.log(ready, status, value, data);
+
+  const handleSelect = async (address: string) => {
+    console.log("selected", address);
+    setValue(address, false);
+    clearSuggestions();
+
+    const result = await getGeocode({ address });
+    const { lat, lng } = await getLatLng(result[0]);
+    setSelected({ lat, lng });
+  };
 
   return (
-    <GoogleMap
-      zoom={13}
-      center={center}
-      mapContainerClassName="flex-1 absolute h-full w-screen touch-pan-x touch-pan-y"
-    >
-      <MarkerF position={center} />
-    </GoogleMap>
+    <Combobox name="z-40">
+      <Combobox.Input
+        value={value}
+        onChange={(event) => setValue(event.target.value)}
+        // onSubmit={}
+      />
+      <Combobox.Options>
+        {status === "OK" &&
+          data.map(({ place_id, description }) => (
+            <Combobox.Option key={place_id} value={description} onClick={()=>handleSelect(description)}>
+              {description}
+            </Combobox.Option>
+          ))}
+      </Combobox.Options>
+    </Combobox>
+  );
+};
+
+function Map({ googleMapsAPIKey }: {googleMapsAPIKey:string}) {
+  let userLng = 0;
+  let userLat = 0;
+  let center = useMemo(() => ({ lat: userLat, lng: userLng }), []);
+
+  const [userPos, setUserPos] = useState({ lat: userLat, lng: userLng });
+  const [selectedLoc, setSelectedLoc] = useState(null);
+  // const [mapContainer, setMapContainer] = useState(null);
+
+  navigator.geolocation.getCurrentPosition(
+    yesLocationPermission,
+    noLocationPermission
+  );
+
+  function yesLocationPermission(position: {
+    coords: { longitude: number; latitude: number };
+  }) {
+    userLng = position.coords.longitude;
+    userLat = position.coords.latitude;
+    setUserPos({ lat: userLat, lng: userLng });
+    console.log(selectedLoc);
+    center = selectedLoc ?? { lat: userLat, lng: userLng };
+  }
+
+  function noLocationPermission(err: { code: number; message: string }) {
+    console.warn(`ERROR(${err.code}): ${err.message}`);
+  }
+
+  // const mapOptions = {
+  //   zoom: 10,
+  //   center: {
+  //     lat: 40.0,
+  //     lng: -80.0,
+  //   },
+  // };
+
+  return (
+    <div>
+      <PlacesAutocomplete setSelected={setSelectedLoc} />
+{/* 
+      <GoogleMapsProvider
+        googleMapsAPIKey={googleMapsAPIKey}
+        mapOptions={mapOptions}
+        mapContainer={mapContainer}
+      >
+
+      </GoogleMapsProvider> */}
+
+      {/* <div ref={(node) => setMapContainer(node)} className="flex-1 absolute h-full w-screen touch-pan-x touch-pan-y"></div> */}
+
+      <GoogleMap
+          zoom={10}
+          center={center}
+          mapContainerClassName="flex-1 absolute h-full w-screen touch-pan-x touch-pan-y"
+        >
+          <MarkerF position={userPos} />
+          {selectedLoc && <MarkerF position={selectedLoc}/>}
+        </GoogleMap>
+    </div>
   );
 }
 
 export default function Home() {
   const data = useLoaderData<typeof loader>();
-  console.log(data);
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: data.GOOGLE_MAP_API_KEY ?? "",
+    libraries: ["places"],
   });
 
-  if (!isLoaded) return <div>Loading...</div>;
-  return <Map />;
+  if (!isLoaded) return <div>Loading Map...</div>;
+  console.log(data.GOOGLE_MAP_API_KEY)
+  return <Map googleMapsAPIKey={data.GOOGLE_MAP_API_KEY ?? ""} />;
 }
