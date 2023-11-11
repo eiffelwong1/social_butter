@@ -3,8 +3,9 @@ import usePlacesAutoComplete, {
   getLatLng,
 } from "use-places-autocomplete";
 import { Combobox } from "@headlessui/react";
+import { useMap } from "@vis.gl/react-google-maps";
 
-export const PlacesAutocomplete = ({ setSelected }) => {
+export const PlacesAutocomplete = () => {
   const {
     ready,
     value,
@@ -12,6 +13,7 @@ export const PlacesAutocomplete = ({ setSelected }) => {
     suggestions: { status, data },
     clearSuggestions,
   } = usePlacesAutoComplete({ debounce: 300 });
+  const map = useMap("main")
 
   console.log(ready, status, value, data);
 
@@ -21,8 +23,14 @@ export const PlacesAutocomplete = ({ setSelected }) => {
     clearSuggestions();
 
     const result = await getGeocode({ address });
-    const { lat, lng } = await getLatLng(result[0]);
-    setSelected({ lat, lng });
+    const latlng = await getLatLng(result[0]);
+    map?.panTo(latlng)
+
+      new google.maps.Marker({
+        position: map?.getCenter(),
+        map,
+        title: "Hello World!",
+      });
   };
 
   return (

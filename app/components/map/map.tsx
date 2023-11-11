@@ -6,35 +6,24 @@ import {
   useMap
 } from "@vis.gl/react-google-maps";
 import { useState, useEffect } from "react";
-import { PlacesAutocomplete } from "~/components/map/places";
+import { useLoadScript } from "@react-google-maps/api";
+import { PlacesAutocomplete, MapControl } from "~/components/map/places";
 
 export function MainMap({ googleMapsAPIKey, provUserPos }: any) {
   const map = useMap("main");
   const [userPos, setUserPos] = useState(provUserPos ?? { lat: 0, lng: 0 });
   const [infoOpen, setInfoOpen] = useState(false);
 
-  // ask to get user location
-  useEffect(() => {
-    console.log("found user location")
-    navigator.geolocation.getCurrentPosition((pos) => {
-      setUserPos({ lng: pos.coords.longitude, lat: pos.coords.latitude });
-    });
-  }, []);
-
-  useEffect(() => {
-    console.log("user position change", userPos, map)
-    if (!map) return;
-    console.log("panning")
-
-    map.panTo(new google.maps.LatLng(userPos.lat, userPos.lng))
-    console.log("finish")
-
-    // here you can interact with the imperative maps API
-  }, [map, userPos]);
+  // look for a way to not use useLoadScript as it's a different library
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: googleMapsAPIKey ?? "",
+    libraries: ["places"],
+  });
+  if (!isLoaded) return <div>Loading Map...</div>;
 
   return (
     <APIProvider apiKey={googleMapsAPIKey} libraries={["places"]}>
-      <PlacesAutocomplete setSelected={setUserPos}></PlacesAutocomplete>
+      <PlacesAutocomplete></PlacesAutocomplete>
       <Map id={"main"} center={userPos} zoom={3} minZoom={3} disableDefaultUI={true}>
         <Marker position={userPos} onClick={() => setInfoOpen(true)}></Marker>
 
