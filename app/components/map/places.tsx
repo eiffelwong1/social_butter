@@ -35,11 +35,9 @@ export const PlacesAutocomplete = () => {
   };
 
   return (
-    <div className="">
     <Combobox>
-      <div className="">
       <Combobox.Input
-        className={"text-violet-700"}
+        className=""
         value={value}
         onChange={(event) => setValue(event.target.value)}
         // onSubmit={}
@@ -52,12 +50,10 @@ export const PlacesAutocomplete = () => {
               value={description}
               onClick={() => handleSelect(description)}
             >
-              <div className="text-violet-700">{description}</div>
+              <div className="bg-white">{description}</div>
             </Combobox.Option>
           ))}
       </Combobox.Options>
-      </div>
     </Combobox>
-    </div>
   );
 };
