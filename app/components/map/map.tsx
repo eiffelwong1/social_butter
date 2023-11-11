@@ -3,30 +3,30 @@ import {
   InfoWindow,
   Map,
   Marker,
-  useMap
+  useMap,
 } from "@vis.gl/react-google-maps";
 import { useState, useEffect } from "react";
 import { useLoadScript } from "@react-google-maps/api";
 import { PlacesAutocomplete, MapControl } from "~/components/map/places";
+import {useApiIsLoaded} from '@vis.gl/react-google-maps';
 
-export function MainMap({ googleMapsAPIKey, provUserPos }: any) {
+export function MainMap({ provUserPos }: any) {
   const map = useMap("main");
   const [userPos, setUserPos] = useState(provUserPos ?? { lat: 0, lng: 0 });
   const [infoOpen, setInfoOpen] = useState(false);
+  const apiIsLoaded = useApiIsLoaded();
 
-  // look for a way to not use useLoadScript as it's a different library
-  const { isLoaded } = useLoadScript({
-    googleMapsApiKey: googleMapsAPIKey ?? "",
-    libraries: ["places"],
-  });
-  if (!isLoaded) return <div>Loading Map...</div>;
+  if (!apiIsLoaded) return <>Map is Loading</>;
 
   return (
-    <APIProvider apiKey={googleMapsAPIKey} libraries={["places"]}>
-      <PlacesAutocomplete></PlacesAutocomplete>
-      <Map id={"main"} center={userPos} zoom={3} minZoom={3} disableDefaultUI={true}>
-        <Marker position={userPos} onClick={() => setInfoOpen(true)}></Marker>
-
+    <>
+      <Map
+        id={"main"}
+        center={userPos}
+        zoom={3}
+        minZoom={3}
+        disableDefaultUI={true}
+      >
         {infoOpen && (
           <InfoWindow
             position={userPos}
@@ -38,6 +38,6 @@ export function MainMap({ googleMapsAPIKey, provUserPos }: any) {
           </InfoWindow>
         )}
       </Map>
-    </APIProvider>
+    </>
   );
 }

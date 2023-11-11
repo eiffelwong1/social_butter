@@ -6,6 +6,7 @@ import { Combobox } from "@headlessui/react";
 import { useMap } from "@vis.gl/react-google-maps";
 
 export const PlacesAutocomplete = () => {
+
   const {
     ready,
     value,
@@ -34,8 +35,11 @@ export const PlacesAutocomplete = () => {
   };
 
   return (
-    <Combobox name="z-40">
+    <div className="">
+    <Combobox>
+      <div className="">
       <Combobox.Input
+        className={"text-violet-700"}
         value={value}
         onChange={(event) => setValue(event.target.value)}
         // onSubmit={}
@@ -48,10 +52,12 @@ export const PlacesAutocomplete = () => {
               value={description}
               onClick={() => handleSelect(description)}
             >
-              {description}
+              <div className="text-violet-700">{description}</div>
             </Combobox.Option>
           ))}
       </Combobox.Options>
+      </div>
     </Combobox>
+    </div>
   );
 };

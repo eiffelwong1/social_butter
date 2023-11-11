@@ -12,8 +12,7 @@ export default {
       'neutral': '#CCC',
       'neutral-dark': '#666'
     },
-    extend: {},
+    extend: {}
   },
-  plugins: [],
+  plugins: []
 } satisfies Config
-

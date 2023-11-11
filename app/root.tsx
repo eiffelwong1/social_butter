@@ -2,15 +2,16 @@ import type { LinksFunction, LoaderArgs } from "@remix-run/node";
 import stylesheet from "./styles/tailwind.css";
 import { useRouteError, isRouteErrorResponse } from "react-router-dom";
 
-import { LiveReload, Outlet, Links, Meta, Scripts  } from "@remix-run/react";
+import { LiveReload, Outlet, Links, Meta, Scripts, useLoaderData } from "@remix-run/react";
 import TopNavBar from "~/components/layout/top-nav-bar";
 import Footer from "~/components/layout/footer";
 
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth"
+import { getAuth } from "firebase/auth";
 import { getAnalytics } from "firebase/analytics";
 import { getUserSession } from "./utils/session.server";
+import { APIProvider } from "@vis.gl/react-google-maps";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -21,13 +22,20 @@ export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
 ];
 
-export async function loader({request}:LoaderArgs){
+export async function loader({ request }: LoaderArgs) {
   const userSession = await getUserSession(request);
 
-  return {userSession: userSession}
+  const mapKey = process.env.GOOGLE_MAP_API_KEY;
+  if (!mapKey) {
+    throw new Error("GOOGLE_MAP_API_KEY must be set");
+  }
+
+  return { userSession: userSession, GOOGLE_MAP_API_KEY: process.env.GOOGLE_MAP_API_KEY, };
 }
 
 export default function App() {
+  const { GOOGLE_MAP_API_KEY } = useLoaderData()
+
   return (
     <html lang="en">
       <head>
@@ -38,10 +46,12 @@ export default function App() {
         <Links />
       </head>
       <body className="flex flex-col min-h-screen">
-        <TopNavBar />
-        <div className="flex-grow">
-          <Outlet />
-        </div>
+        <APIProvider apiKey={GOOGLE_MAP_API_KEY} libraries={["places"]}>
+          <TopNavBar />
+          <div className="flex-grow">
+            <Outlet />
+          </div>
+        </APIProvider>
         <Footer />
         <Scripts />
         <LiveReload />
@@ -52,18 +62,17 @@ export default function App() {
 
 export function ErrorBoundary() {
   const error = useRouteError();
-  let error_message = ""
-  if(isRouteErrorResponse(error)){
-    if(error.status == 404){
-      error_message = "the page you are looking for does not exist"
-    }else{
-      error_message = `${error.status} ${error.statusText}`
+  let error_message = "";
+  if (isRouteErrorResponse(error)) {
+    if (error.status == 404) {
+      error_message = "the page you are looking for does not exist";
+    } else {
+      error_message = `${error.status} ${error.statusText}`;
     }
-    
-  }else if(error instanceof Error){
-    error_message = error.message
-  }else{
-    error_message = "Oops, an unknown error have occured"
+  } else if (error instanceof Error) {
+    error_message = error.message;
+  } else {
+    error_message = "Oops, an unknown error have occured";
   }
   return (
     <html lang="en">
@@ -74,9 +83,7 @@ export function ErrorBoundary() {
       </head>
       <body>
         <TopNavBar />
-        <h1>
-          {error_message}
-        </h1>
+        <h1>{error_message}</h1>
       </body>
     </html>
   );

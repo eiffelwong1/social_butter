@@ -5,9 +5,13 @@ import { auth } from "~/utils/firebase.server";
 import { onAuthStateChanged } from "firebase/auth";
 import { LoaderArgs } from "@remix-run/node";
 import React from "react";
+import { PlacesAutocomplete } from "~/components/map/places";
+import { useApiIsLoaded } from "@vis.gl/react-google-maps";
 
 export default function TopNavBar() {
   const userSession = useCurrentUser();
+  const apiIsLoaded = useApiIsLoaded();
+  
 
   return (
     <nav className="z-30 w-full bg-main-yellow grid justify-stretch grid-flow-row px-12 py-4 h-32 overflow-visible sm:grid-flow-col">
@@ -20,7 +24,7 @@ export default function TopNavBar() {
       </div>
       <div className="flex justify-center py-4">
         <ul className="flex">
-          <li className="ml-4 text-2xl py-5 hover:py-4">AnyWhere</li>
+          <li className="ml-4 text-2xl py-5 hover:py-4">AnyWhere {apiIsLoaded && <PlacesAutocomplete></PlacesAutocomplete>}</li>
           <li className="ml-4 text-2xl py-5 hover:py-4">Any Time</li>
           <li className="ml-4 text-2xl py-5 hover:py-4">In Person</li>
         </ul>
