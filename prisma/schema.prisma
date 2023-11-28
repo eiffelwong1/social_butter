@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -17,14 +14,27 @@ model User {
   updatedAt    DateTime @updatedAt
   username     String   @unique
   passwordHash String
-  joinedEvents Event []
+  joinedEvents Event[]
 }
 
 model Event {
-  id         String   @id @default(uuid())
-  joinedUsers User []
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  name       String
-  detail     String
+  id          String   @id @default(uuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  date        DateTime
+  name        String
+  detail      String
+  address     String
+  lat         Float
+  lng         Float
+  joinedUsers User[]
+}
+
+model EventToUser {
+  A String
+  B String
+
+  @@unique([A, B], map: "_EventToUser_AB_unique")
+  @@index([B], map: "_EventToUser_B_index")
+  @@map("_EventToUser")
 }

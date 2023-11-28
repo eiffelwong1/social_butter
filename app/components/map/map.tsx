@@ -1,14 +1,6 @@
-import {
-  APIProvider,
-  InfoWindow,
-  Map,
-  Marker,
-  useMap,
-} from "@vis.gl/react-google-maps";
-import { useState, useEffect } from "react";
-import { useLoadScript } from "@react-google-maps/api";
-import { PlacesAutocomplete, MapControl } from "~/components/map/places";
-import {useApiIsLoaded} from '@vis.gl/react-google-maps';
+import { InfoWindow, Map, useMap } from "@vis.gl/react-google-maps";
+import { useState } from "react";
+import { useApiIsLoaded } from "@vis.gl/react-google-maps";
 
 export function MainMap({ provUserPos }: any) {
   const map = useMap("main");

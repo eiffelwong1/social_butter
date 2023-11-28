@@ -1,54 +1,65 @@
-import { Menu } from "@headlessui/react";
-import { Form, Link, useLoaderData } from "@remix-run/react";
+import { Menu, Tab, Dialog } from "@headlessui/react";
+import { Form, Link } from "@remix-run/react";
 import { useCurrentUser } from "~/hook/useCurrentUser";
-import { auth } from "~/utils/firebase.server";
-import { onAuthStateChanged } from "firebase/auth";
-import { LoaderArgs } from "@remix-run/node";
-import React from "react";
+import { HTMLAttributes, ReactNode, useState } from "react";
 import { PlacesAutocomplete } from "~/components/map/places";
 import { useApiIsLoaded } from "@vis.gl/react-google-maps";
 
 export default function TopNavBar() {
   const userSession = useCurrentUser();
   const apiIsLoaded = useApiIsLoaded();
-  
+
+  const [searchPanelOpen, setSearchPanelOpen] = useState(false);
+  const [searchLocation, setSearchLocation] = useState("");
+  const actStartTime = useState(Date);
+  const actEndTime = useState(Date);
+  const actMode = useState("InPerson");
 
   return (
-    <nav className="z-30 w-full bg-main-yellow grid justify-stretch grid-flow-row px-12 py-4 h-32 overflow-visible sm:grid-flow-col">
+    <nav className="z-30 w-full bg-main-yellow grid justify-stretch grid-flow-row px-12 py-4 h-32 sm:grid-flow-col">
       <div>
         <img
-          className="h-32 w-auto lg:block justify-start"
+          className="h-24 w-auto lg:block justify-start"
           src="/Dalle_logo.png"
           alt="social butter main logo"
         />
       </div>
-      <div className="flex justify-center py-4">
-        <ul className="flex">
-          <li className="ml-4 text-2xl py-5 hover:py-4">AnyWhere {apiIsLoaded && <PlacesAutocomplete></PlacesAutocomplete>}</li>
-          <li className="ml-4 text-2xl py-5 hover:py-4">Any Time</li>
-          <li className="ml-4 text-2xl py-5 hover:py-4">In Person</li>
-        </ul>
+      <div
+        className="justify-center py-4 grid grid-flow-col bg-yellow-100"
+        onClick={() => setSearchPanelOpen(true)}
+      >
+        <div className="ml-4 text-2xl py-5 hover:py-4">
+          {searchLocation?.split(",", 1)[0] || "AnyWhere"}
+        </div>
+        <div className="ml-4 text-2xl py-5 hover:py-4">Any Time</div>
+        <div className="ml-4 text-2xl py-5 hover:py-4">Any Formate</div>
+        <div>
+          <SearchPanel
+            searchPanelOpen={searchPanelOpen}
+            setSearchPanelOpen={setSearchPanelOpen}
+          >
+            <div>
+              <h3>location:</h3>
+              <PlacesAutocomplete
+                searchLocation={searchLocation}
+                setSearchLocation={setSearchLocation}
+                onComplete={() => setSearchPanelOpen(false)}
+              ></PlacesAutocomplete>
+            </div>
+            <div>
+              <></>
+            </div>
+          </SearchPanel>
+        </div>
       </div>
-      <div className="flex justify-end overflow-visible">
+
+      <div className="flex justify-end">
         <Menu>
           {userSession?.currentUser
             ? LoggedInMenuItems()
             : NotLoggedInMenuItems()}
           <Menu.Button>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="w-6 h-6"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
-              />
-            </svg>
+            <MenuIcon />
           </Menu.Button>
         </Menu>
       </div>
@@ -118,5 +129,46 @@ function LoggedInMenuItems() {
         <button>Logout</button>
       </Form>
     </Menu.Items>
+  );
+}
+
+type SearchPanelProps = {
+  children: ReactNode;
+  searchPanelOpen: boolean;
+  setSearchPanelOpen: any;
+};
+
+function SearchPanel({
+  children,
+  searchPanelOpen,
+  setSearchPanelOpen,
+}: SearchPanelProps) {
+  return (
+    <Dialog
+      className="relative z-10 h-screen items-center justify-center text-center backdrop-blur-lg"
+      open={searchPanelOpen}
+      onClose={() => setSearchPanelOpen(false)}
+    >
+      <Dialog.Panel className="p-4">{children}</Dialog.Panel>
+    </Dialog>
+  );
+}
+
+function MenuIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={1.5}
+      stroke="currentColor"
+      className="w-6 h-6"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+      />
+    </svg>
   );
 }

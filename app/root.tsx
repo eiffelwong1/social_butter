@@ -52,7 +52,6 @@ export default function App() {
             <Outlet />
           </div>
         </APIProvider>
-        <Footer />
         <Scripts />
         <LiveReload />
       </body>

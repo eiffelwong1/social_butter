@@ -4,9 +4,19 @@ import usePlacesAutoComplete, {
 } from "use-places-autocomplete";
 import { Combobox } from "@headlessui/react";
 import { useMap } from "@vis.gl/react-google-maps";
+import { useEffect, useState } from "react";
 
-export const PlacesAutocomplete = () => {
+type placesAutocompleteInputType = {
+  searchLocation?: string;
+  setSearchLocation?: any;
+  onComplete?: any;
+};
 
+export const PlacesAutocomplete = ({
+  searchLocation,
+  setSearchLocation,
+  onComplete
+}: placesAutocompleteInputType) => {
   const {
     ready,
     value,
@@ -14,42 +24,46 @@ export const PlacesAutocomplete = () => {
     suggestions: { status, data },
     clearSuggestions,
   } = usePlacesAutoComplete({ debounce: 300 });
-  const map = useMap("main")
+  const map = useMap("main");
 
-  console.log(ready, status, value, data);
+  const [displayLocation, setDisplayLocation] = useState<string | null>(null);
+  //our default data
+  useEffect(() => {
+    displayLocation ?? setValue(searchLocation ?? "");
+  }, []);
 
   const handleSelect = async (address: string) => {
     console.log("selected", address);
     setValue(address, false);
+    setSearchLocation(address);
     clearSuggestions();
 
     const result = await getGeocode({ address });
     const latlng = await getLatLng(result[0]);
-    map?.panTo(latlng)
+    map?.panTo(latlng);
 
-      new google.maps.Marker({
-        position: map?.getCenter(),
-        map,
-        title: "Hello World!",
-      });
+    new google.maps.Marker({
+      position: map?.getCenter(),
+      map,
+      title: "Hello World!",
+    });
+
+    onComplete && onComplete()
   };
 
   return (
-    <Combobox>
+    <Combobox value={value} onChange={handleSelect}>
       <Combobox.Input
-        className=""
         value={value}
-        onChange={(event) => setValue(event.target.value)}
-        // onSubmit={}
+        onChange={(event) => {
+          setDisplayLocation(event.target.value);
+          setValue(event.target.value);
+        }}
       />
       <Combobox.Options>
         {status === "OK" &&
           data.map(({ place_id, description }) => (
-            <Combobox.Option
-              key={place_id}
-              value={description}
-              onClick={() => handleSelect(description)}
-            >
+            <Combobox.Option key={place_id} value={description}>
               <div className="bg-white">{description}</div>
             </Combobox.Option>
           ))}
