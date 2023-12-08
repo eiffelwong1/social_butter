@@ -30,8 +30,14 @@ export async function loader({ request }: LoaderArgs) {
     throw new Error("GOOGLE_MAP_API_KEY must be set");
   }
 
-  return { userSession: userSession, GOOGLE_MAP_API_KEY: process.env.GOOGLE_MAP_API_KEY, };
+  const mapId = process.env.GOOGLE_MAP_MAP_ID;
+  if (!mapId) {
+    throw new Error("GOOGLE_MAP_MAP_ID must be set");
+  }
+
+  return { userSession: userSession, GOOGLE_MAP_API_KEY: mapKey, GOOGLE_MAP_MAP_ID: mapId};
 }
+
 
 export default function App() {
   const { GOOGLE_MAP_API_KEY } = useLoaderData()

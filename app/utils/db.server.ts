@@ -1,20 +1,25 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from '@prisma/client';
 
-export const singleton = <Value>(
-  name: string,
-  valueFactory: () => Value
-): Value => {
-  const g = global as any;
-  g.__singletons ??= {};
-  g.__singletons[name] ??= valueFactory();
-  return g.__singletons[name];
-};
+let db: PrismaClient;
 
-// Hard-code a unique key, so we can look up the client when this module gets re-imported
-export const db = singleton(
-  "prisma",
-  () => new PrismaClient()
-);
+declare global {
+  // eslint-disable-next-line no-var
+  var __db: PrismaClient | undefined;
+}
+
+// this is needed because in development we don't want to restart
+// the server with every change, but we want to make sure we don't
+// create a new connection to the DB with every change either.
+if (process.env.NODE_ENV === 'production') {
+  db = new PrismaClient();
+} else {
+  if (!global.__db) {
+    global.__db = new PrismaClient();
+  }
+  db = global.__db;
+}
+
+export { db };
 
 
 

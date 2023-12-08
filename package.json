@@ -19,18 +19,23 @@
     "@remix-run/react": "^2.0.0",
     "@remix-run/serve": "^2.0.0",
     "@vis.gl/react-google-maps": "^0.1.2",
+    "date-fns": "^2.30.0",
     "firebase": "^10.4.0",
     "firebase-admin": "^11.11.0",
     "google": "^2.1.0",
     "isbot": "^3.6.8",
     "react": "^18.2.0",
+    "react-date-range": "^1.4.0",
     "react-dom": "^18.2.0",
     "use-places-autocomplete": "^4.0.1"
   },
   "devDependencies": {
+    "@faker-js/faker": "^8.3.1",
     "@remix-run/dev": "^2.0.0",
     "@remix-run/eslint-config": "^2.0.0",
     "@remix-run/node": "^1.19.0",
+    "@types/google.maps": "^3.54.10",
+    "@types/node": "^20.10.3",
     "@types/react": "^18.2.20",
     "@types/react-dom": "^18.2.7",
     "eslint": "^8.38.0",
@@ -39,13 +44,13 @@
     "tailwindcss": "^3.3.3",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",
-    "tsx": "^3.12.10",
-    "typescript": "^5.1.6"
+    "tsx": "^3.14.0",
+    "typescript": "^5.3.2"
   },
   "engines": {
     "node": ">=18.0.0"
   },
   "prisma": {
-    "seed": "ts-node --require tsconfig-paths/register prisma/seed.ts"
+    "seed": "npx tsx prisma/seed.ts"
   }
 }

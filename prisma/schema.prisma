@@ -23,8 +23,8 @@ model Event {
   updatedAt   DateTime @updatedAt
   date        DateTime
   name        String
-  detail      String
-  address     String
+  detail      String @db.Text
+  address     String @db.Text
   lat         Float
   lng         Float
   joinedUsers User[]

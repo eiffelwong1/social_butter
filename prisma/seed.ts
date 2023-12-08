@@ -1,41 +1,36 @@
 import { PrismaClient } from '@prisma/client'
+import { faker } from '@faker-js/faker'
 
 const db = new PrismaClient()
-
-const events = [
-  {
-    name: 'Tech Talks: Exploring the Latest Web Development Trends',
-    date: new Date('2023-07-19T08:00:00'),
-    detail:
-      'Join us for an evening of insightful talks on progressive web apps, serverless architecture, and the future of JavaScript frameworks.',
-    address: '123 Main St, San Francisco',
-    lat: 49.244709,
-    lng: -122.932856
-  },
-  {
-    name: 'Fitness Bootcamp: Get Fit and Stay Active',
-    date: new Date('2023-08-15T18:30:00'),
-    detail:
-      'Break a sweat and achieve your fitness goals with our high-intensity workout session suitable for all fitness levels.',
-    address: '456 Elm St, Munich',
-    lat: 49.276402,
-    lng: -122.922481
-  },
-  {
-    name: 'Tennis Tournament: Fun and Competitive Matches',
-    date: new Date('2023-09-22T12:15:00'),
-    detail:
-      'Participate in our annual tennis tournament and showcase your skills in exciting matches with players from the community.',
-    address: '789 Oak St, Istanbul',
-    lat: 49.250874,
-    lng: -122.917975
-  }
-]
-
 async function seed () {
+  const eventNum = 1000
+  const events: any[] = []
+
+  for (let i = 0; i < eventNum; i++) {
+    const event: any = {
+      id: "_"+i.toString(),
+      name: faker.lorem.sentences({min: 1, max: 1}),
+      date: faker.date.between({
+        from: '2020-01-01T00:00:00.000Z',
+        to: '2030-01-01T00:00:00.000Z'
+      }),
+      detail: 'This a Test Data' + faker.lorem.paragraphs({ min: 1, max: 5 }),
+      address: `${faker.location.streetAddress(
+        true
+      )}, ${faker.location.city()}, ${faker.location.state({
+        abbreviated: true
+      })}, ${faker.location.zipCode()}`,
+      lat: faker.location.latitude(),
+      lng: faker.location.longitude(),
+    }
+
+    events.push(event)
+  }
+
+  console.log(events)
+
   try {
     await db.event.createMany({ data: events })
-
     console.log('Seed data inserted successfully.')
   } catch (error) {
     console.error('Error seeding data:', error)
