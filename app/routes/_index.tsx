@@ -5,12 +5,16 @@ import {
   InfoWindow,
   Map,
   useApiIsLoaded,
-  useMap,
+  useAdvancedMarkerRef,
 } from "@vis.gl/react-google-maps";
 import { SetStateAction, useEffect, useState } from "react";
 import { BoundChangeListener } from "~/components/map/mapFunction";
 import { db } from "~/utils/db.server";
-import { useSearchParams, useLoaderData, useRouteLoaderData } from "@remix-run/react";
+import {
+  useSearchParams,
+  useLoaderData,
+  useRouteLoaderData,
+} from "@remix-run/react";
 import type { Event } from "@prisma/client";
 import { EventsDataPatcher } from "~/hook/useEvents";
 
@@ -83,8 +87,8 @@ export default function Home() {
     useState<google.maps.LatLngBounds | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const { GOOGLE_MAP_MAP_ID } = useRouteLoaderData("root")
-  console.log(GOOGLE_MAP_MAP_ID)
+  const { GOOGLE_MAP_MAP_ID } = useRouteLoaderData("root");
+  console.log(GOOGLE_MAP_MAP_ID);
 
   useEffect(() => {
     if (!curLatLngBounds) {
@@ -117,7 +121,15 @@ export default function Home() {
       >
         {events &&
           events.map((event: Event) => {
-            return <AdvancedMarker key={event.id} position={{ lng: event.lng, lat: event.lat }} />
+            return (
+              <AdvancedMarkerWithInfo
+                key={event.id}
+                event={event}
+              >
+                <div className="text-xl">{event.name}</div>
+                {event.detail}
+              </AdvancedMarkerWithInfo>
+            );
           })}
         <BoundChangeListener
           onBoundChange={(
@@ -126,5 +138,35 @@ export default function Home() {
         ></BoundChangeListener>
       </Map>
     </div>
+  );
+}
+
+function AdvancedMarkerWithInfo({
+  event,
+  children,
+}: {
+  event: Event;
+  children?: any;
+}) {
+  const [markerRef, marker] = useAdvancedMarkerRef();
+  const [infowindowOpen, setInfowindowOpen] = useState(false);
+
+  return (
+    <>
+      <AdvancedMarker
+        ref={markerRef}
+        key={event.id}
+        position={{ lng: event.lng, lat: event.lat }}
+        onClick={()=>setInfowindowOpen(!infowindowOpen)}
+      />
+      {infowindowOpen && (
+        <InfoWindow
+          anchor={marker}
+          onCloseClick={() => setInfowindowOpen(false)}
+        >
+          {children}
+        </InfoWindow>
+      )}
+    </>
   );
 }
