@@ -18,11 +18,13 @@ export default function TopNavBar() {
   return (
     <nav className="z-30 w-full bg-main-yellow grid justify-stretch grid-flow-row px-12 py-4 h-32 sm:grid-flow-col">
       <div>
-        <img
-          className="h-24 w-auto lg:block justify-start"
-          src="/Dalle_logo.png"
-          alt="social butter main logo"
-        />
+        <Link to="/">
+          <img
+            className="h-24 w-auto lg:block justify-start"
+            src="/Dalle_logo.png"
+            alt="social butter main logo"
+          />
+        </Link>
       </div>
       <div
         className="justify-center py-4 grid grid-flow-col bg-yellow-100"

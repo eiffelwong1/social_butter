@@ -6,52 +6,21 @@ import {
 } from "@vis.gl/react-google-maps";
 import { SetStateAction, useEffect, useState } from "react";
 import { BoundChangeListener } from "./mapFunction";
-import { db } from "~/utils/db.server";
-import { PrismaClient } from "@prisma/client";
-import type { LoaderFunctionArgs } from "react-router";
 import { useRouteLoaderData, useSearchParams } from "@remix-run/react";
-
-export async function loader({ params }: LoaderFunctionArgs) {
-  const maxLat = parseInt(params.ne_lat ?? "");
-  const maxLng = parseInt(params.ne_lng ?? "");
-  const minLat = parseInt(params.sw_lat ?? "");
-  const minLng = parseInt(params.sw_lng ?? "");
-
-  if (!maxLat || !maxLng || !minLat || !minLng) {
-    console.log("unable to parse map boundary");
-    return [];
-  }
-
-  //fetch events from DB
-  const results = db.event.findMany({
-    where: {
-      lat: {
-        lt: maxLat,
-        gt: minLat,
-      },
-      lng: {
-        lt: maxLng,
-        gt: minLng,
-      },
-    },
-  });
-  console.log("result: "+ results)
-  return results;
-}
 
 export function MainMap({ provUserPos }: any) {
   const [userPos, setUserPos] = useState(provUserPos ?? { lat: 0, lng: 0 });
   const [infoOpen, setInfoOpen] = useState(false);
   const apiIsLoaded = useApiIsLoaded();
-  const [curLatLngBounds, setCurLatLngBounds] = useState<google.maps.LatLngBounds|null>(null);
+  const [curLatLngBounds, setCurLatLngBounds] =
+    useState<google.maps.LatLngBounds | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const { GOOGLE_MAP_MAP_ID } = useRouteLoaderData("root")
-  
+  const { GOOGLE_MAP_MAP_ID } = useRouteLoaderData("root");
 
   useEffect(() => {
-    if(!curLatLngBounds){
-      return
+    if (!curLatLngBounds) {
+      return;
     }
     const params = new URLSearchParams();
     params.set("ne_lat", curLatLngBounds.getNorthEast().lat().toString());
@@ -84,9 +53,9 @@ export function MainMap({ provUserPos }: any) {
           </InfoWindow>
         )}
         <BoundChangeListener
-          onBoundChange={(curLatLngBounds: SetStateAction<google.maps.LatLngBounds|null>) =>
-            setCurLatLngBounds(curLatLngBounds)
-          }
+          onBoundChange={(
+            curLatLngBounds: SetStateAction<google.maps.LatLngBounds | null>
+          ) => setCurLatLngBounds(curLatLngBounds)}
         ></BoundChangeListener>
       </Map>
     </>

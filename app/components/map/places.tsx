@@ -1,6 +1,7 @@
 import usePlacesAutoComplete, {
   getGeocode,
   getLatLng,
+  getLatLngBound,
 } from "use-places-autocomplete";
 import { Combobox } from "@headlessui/react";
 import { useMap } from "@vis.gl/react-google-maps";
@@ -15,7 +16,7 @@ type placesAutocompleteInputType = {
 export const PlacesAutocomplete = ({
   searchLocation,
   setSearchLocation,
-  onComplete
+  onComplete,
 }: placesAutocompleteInputType) => {
   const {
     ready,
@@ -33,27 +34,22 @@ export const PlacesAutocomplete = ({
   }, []);
 
   const handleSelect = async (address: string) => {
-    console.log("selected", address);
+    console.debug("selected", address);
     setValue(address, false);
     setSearchLocation(address);
     clearSuggestions();
 
     const result = await getGeocode({ address });
-    const latlng = await getLatLng(result[0]);
-    map?.panTo(latlng);
+    map?.fitBounds(result[0].geometry.viewport)
+    console.log(result[0].geometry.viewport, map?.getBounds())  
 
-    new google.maps.Marker({
-      position: map?.getCenter(),
-      map,
-      title: "Hello World!",
-    });
-
-    onComplete && onComplete()
+    onComplete && onComplete();
   };
 
   return (
     <Combobox value={value} onChange={handleSelect}>
       <Combobox.Input
+        type="search"
         value={value}
         onChange={(event) => {
           setDisplayLocation(event.target.value);

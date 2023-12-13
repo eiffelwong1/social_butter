@@ -31,12 +31,10 @@ export async function loader({
   const url = new URL(request.url);
   const params = url.searchParams;
 
-  const maxLat = parseInt(params?.get("ne_lat") ?? "");
-  const maxLng = parseInt(params?.get("ne_lng") ?? "");
-  const minLat = parseInt(params?.get("sw_lat") ?? "");
-  const minLng = parseInt(params?.get("sw_lng") ?? "");
-
-  console.log(params);
+  const maxLat = parseFloat(params?.get("ne_lat") ?? "");
+  const maxLng = parseFloat(params?.get("ne_lng") ?? "");
+  const minLat = parseFloat(params?.get("sw_lat") ?? "");
+  const minLng = parseFloat(params?.get("sw_lng") ?? "");
 
   if (!maxLat || !maxLng || !minLat || !minLng) {
     console.log("unable to parse map boundary");
@@ -44,39 +42,49 @@ export async function loader({
   }
 
   //fetch events from DB
-  const events = await db.event.findMany({
-    take: 100,
-    where: {
-      lat: {
-        lt: maxLat,
-        gt: minLat,
+  var results:Event[] = []
+  if (maxLng < minLng) {
+    // special case when map crosses lng line 0
+    results = await db.event.findMany({
+      take: 100,
+      where: {
+        lat: {
+          lt: maxLat,
+          gt: minLat,
+        },
+        OR: [
+          {
+            lng: {
+              lt: minLng,
+            },
+          },
+          {
+            lng: {
+              gt: maxLng,
+            },
+          },
+        ],
       },
-      lng: {
-        lt: maxLng,
-        gt: minLng,
-      },
-    },
-  });
-  console.log("result: " + events);
-  return events;
-}
-
-async function PlaceEvents({ events, map }: { events: Event[]; map: any }) {
-  console.log(events);
-
-  const { AdvancedMarkerElement } = (await google.maps.importLibrary(
-    "marker"
-  )) as google.maps.MarkerLibrary;
-
-  console.log("placing markers");
-  events.map((event) => {
-    const marker = new AdvancedMarkerElement({
-      map,
-      position: { lat: event.lat, lng: event.lng },
     });
-    return marker;
-  });
-  console.log("finish placing markers");
+  } else {
+    //fetch events from DB
+    results = await db.event.findMany({
+      take: 100,
+      where: {
+        lat: {
+          lt: maxLat,
+          gt: minLat,
+        },
+        lng: {
+          lt: maxLng,
+          gt: minLng,
+        },
+      },
+    });
+  }
+  
+  console.log("result: " + results);
+  return results;
 }
 
 export default function Home() {
@@ -88,7 +96,6 @@ export default function Home() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const { GOOGLE_MAP_MAP_ID } = useRouteLoaderData("root");
-  console.log(GOOGLE_MAP_MAP_ID);
 
   useEffect(() => {
     if (!curLatLngBounds) {
@@ -107,7 +114,6 @@ export default function Home() {
   //const map = useMap("main");
 
   if (!apiIsLoaded) return <>Map is Loading</>;
-  //PlaceEvents({ events, map });
 
   return (
     <div className="flex-1 absolute h-[calc(100vh-8rem)] w-screen touch-pan-x touch-pan-y">
