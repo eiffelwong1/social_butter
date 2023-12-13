@@ -43,7 +43,7 @@ export default function App() {
   const { GOOGLE_MAP_API_KEY } = useLoaderData()
 
   return (
-    <html lang="en">
+    <html lang="en" className="overflow-hidden">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
