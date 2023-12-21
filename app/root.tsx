@@ -2,15 +2,18 @@ import type { LinksFunction, LoaderArgs } from "@remix-run/node";
 import stylesheet from "./styles/tailwind.css";
 import { useRouteError, isRouteErrorResponse } from "react-router-dom";
 
-import { LiveReload, Outlet, Links, Meta, Scripts, useLoaderData } from "@remix-run/react";
+import {
+  LiveReload,
+  Outlet,
+  Links,
+  Meta,
+  Scripts,
+  useLoaderData,
+} from "@remix-run/react";
 import TopNavBar from "~/components/layout/top-nav-bar";
-import Footer from "~/components/layout/footer";
 
 // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getAnalytics } from "firebase/analytics";
-import { getUserSession } from "./utils/session.server";
+import { getUserSession } from "./modules/session.server";
 import { APIProvider } from "@vis.gl/react-google-maps";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -35,15 +38,18 @@ export async function loader({ request }: LoaderArgs) {
     throw new Error("GOOGLE_MAP_MAP_ID must be set");
   }
 
-  return { userSession: userSession, GOOGLE_MAP_API_KEY: mapKey, GOOGLE_MAP_MAP_ID: mapId};
+  return {
+    userSession: userSession,
+    GOOGLE_MAP_API_KEY: mapKey,
+    GOOGLE_MAP_MAP_ID: mapId,
+  };
 }
 
-
 export default function App() {
-  const { GOOGLE_MAP_API_KEY } = useLoaderData()
+  const { GOOGLE_MAP_API_KEY } = useLoaderData<typeof loader>();
 
   return (
-    <html lang="en" className="overflow-hidden">
+    <html lang="en">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />

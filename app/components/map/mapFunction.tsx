@@ -1,5 +1,5 @@
 import { useMap } from "@vis.gl/react-google-maps";
-import { db } from "~/utils/db.server";
+import { db } from "~/modules/db.server";
 
 export function BoundChangeListener({ onBoundChange }: any) {
   const map = useMap("main");
@@ -22,5 +22,3 @@ export function BoundChangeListener({ onBoundChange }: any) {
 
   google.maps.event.addListener(map, "tilesloaded", updateMapPins);
 }
-
-

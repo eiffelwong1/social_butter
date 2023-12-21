@@ -9,7 +9,7 @@ import {
 } from "@vis.gl/react-google-maps";
 import { SetStateAction, useEffect, useState } from "react";
 import { BoundChangeListener } from "~/components/map/mapFunction";
-import { db } from "~/utils/db.server";
+import { db } from "~/modules/db.server";
 import {
   useSearchParams,
   useLoaderData,
@@ -42,7 +42,7 @@ export async function loader({
   }
 
   //fetch events from DB
-  var results:Event[] = []
+  var results: Event[] = [];
   if (maxLng < minLng) {
     // special case when map crosses lng line 0
     results = await db.event.findMany({
@@ -82,7 +82,7 @@ export async function loader({
       },
     });
   }
-  
+
   console.log("result: " + results);
   return results;
 }
@@ -128,10 +128,7 @@ export default function Home() {
         {events &&
           events.map((event: Event) => {
             return (
-              <AdvancedMarkerWithInfo
-                key={event.id}
-                event={event}
-              >
+              <AdvancedMarkerWithInfo key={event.id} event={event}>
                 <div className="text-xl">{event.name}</div>
                 {event.detail}
               </AdvancedMarkerWithInfo>
@@ -163,7 +160,7 @@ function AdvancedMarkerWithInfo({
         ref={markerRef}
         key={event.id}
         position={{ lng: event.lng, lat: event.lat }}
-        onClick={()=>setInfowindowOpen(!infowindowOpen)}
+        onClick={() => setInfowindowOpen(!infowindowOpen)}
       />
       {infowindowOpen && (
         <InfoWindow

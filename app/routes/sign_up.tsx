@@ -5,23 +5,29 @@ import {
   updateProfile,
   getAuth,
 } from "firebase/auth";
-import { createUserSession } from "~/utils/session.server";
+import { createUserSession } from "~/modules/session.server";
 import { Input, Button, FormCard } from "~/components/ui/forms";
+import React from "react";
 
 export async function action({ request }: ActionArgs) {
   const form = await request.formData();
   const email = form.get("email")?.toString() ?? "";
   const password = form.get("password")?.toString() ?? "";
   const displayName = form.get("displayName")?.toString() ?? "";
-
   const auth = getAuth();
+  console.log("before");
   const { user } = await createUserWithEmailAndPassword(auth, email, password);
-  if (auth.currentUser !== null) {
-    updateProfile(auth.currentUser, { displayName: displayName });
-  }
-  const token = await user.toJSON();
+  console.log("after");
+  return { done: user };
 
-  return createUserSession(token, "/");
+  // const auth = getAuth();
+  // const { user } = await createUserWithEmailAndPassword(auth, email, password);
+  // if (auth.currentUser !== null) {
+  //   updateProfile(auth.currentUser, { displayName: displayName });
+  // }
+  // const token = await user.toJSON();
+
+  // return createUserSession(token, "/");
 }
 
 export default function signUp() {

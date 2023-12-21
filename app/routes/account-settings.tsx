@@ -1,9 +1,9 @@
 import { redirect } from "react-router";
 import { LoaderArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import { getUserSession } from "~/utils/session.server";
+import { getUserSession } from "~/modules/session.server";
 
-export async function loader({ request }: LoaderArgs):Promise<any> {
+export async function loader({ request }: LoaderArgs): Promise<any> {
   const userSession = await getUserSession(request);
 
   return { userSession: userSession };
@@ -20,7 +20,7 @@ export default function AccountSettings() {
     );
   }
   const user = data.userSession?.currentUser;
-  console.log(user)
+  console.log(user);
   if (user) {
     // User is signed in, see docs for a list of available properties
     // https://firebase.google.com/docs/reference/js/auth.user
@@ -36,8 +36,14 @@ export default function AccountSettings() {
           <p>Hi {user?.displayName ? user.displayName : "User"}</p>
           <hr></hr>
           <Field title="Email" value={user.email}></Field>
-          <Field title="Is Email Verified?" value={user?.emailVerified ? "true" : "false" ?? "null"}></Field>
-          <Field title="Phone" value={user.phoneNumber ?? "not provided"}></Field>
+          <Field
+            title="Is Email Verified?"
+            value={user?.emailVerified ? "true" : "false" ?? "null"}
+          ></Field>
+          <Field
+            title="Phone"
+            value={user.phoneNumber ?? "not provided"}
+          ></Field>
           <Field
             title="Joined Since"
             value={user?.metadata?.creationTime ?? "unknown"}

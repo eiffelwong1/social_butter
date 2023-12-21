@@ -1,18 +1,12 @@
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
-import {
-  Form,
-  Link,
-  useLoaderData,
-  useRouteError,
-  useRouteLoaderData,
-} from "@remix-run/react";
+import { Form, Link, useLoaderData, useRouteError } from "@remix-run/react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import {
   createUserSession,
   getUserSession,
   deleteUserSession,
-} from "~/utils/session.server";
-import { auth } from "~/utils/firebase.server";
+} from "~/modules/session.server";
+import { auth } from "~/modules/firebase.server";
 import { Button, Input, FormCard } from "~/components/ui/forms";
 
 export async function action({ request }: ActionArgs) {
@@ -27,13 +21,17 @@ export async function action({ request }: ActionArgs) {
   const password = form.get("password")?.toString() ?? "";
 
   if (email === null) {
+    console.warn("Email must be filled in");
     throw new Error("Email must be filled in");
   }
 
   const { user } = await signInWithEmailAndPassword(auth, email, password);
-  const token = await user.toJSON();
+  if (!user) {
+    console.warn("Unable to sign in");
+    throw new Error("Unable to sign in");
+  }
 
-  return createUserSession(token, "/");
+  console.log("complete");
 }
 
 export async function loader({ request }: LoaderArgs) {
